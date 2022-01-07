@@ -2,7 +2,7 @@
 
 class CPU{
     private:
-    // Register
+    // Registers
     uint8_t a; // accumulator
     
     uint16_t bc;
@@ -21,15 +21,13 @@ class CPU{
     uint8_t flag_s; // Sign flag, set if the result is negative
     uint8_t flag_z; // Zero flag, set if the result is zero 
     uint8_t flag_p; // Parity flag, set if the sum of binary bits are even, ex: 0101 -> p = 1 or 11010 -> p = 0
-    uint8_t flag_c; // Carry flag, set if the last add. operating resulted in carry or the last sub. required a borrow 
+    uint8_t flag_c; // Carry flag, set if the last add. operation resulted in carry or the last sub. required a borrow 
     uint8_t flag_hc; // Auxilary/half carry, not used by space invaders 
-
-    // do not implement ac yet
 
     uint16_t pc;
     uint16_t sp;
     uint8_t opcode;
-    uint8_t memory[0x10000]; // 65,536B
+    uint8_t memory[0x10000]; // 65, 536B
     
     public:
     CPU();
@@ -40,8 +38,7 @@ class CPU{
     bool get_parity(uint16_t n);
     bool get_halfcarry(int a, int b);
 
-    void handle_0x(uint8_t opcode);
-    void handle_1x(uint8_t opcode);
-    void handle_2x(uint8_t opcode);
-    void handle_3x(uint8_t opcode);
+    // Stack
+    void stack_push(uint16_t val);
+    uint16_t stack_pop();
 };

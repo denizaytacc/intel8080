@@ -19,6 +19,18 @@ CPU::CPU() {
 
 }
 
+void CPU::stack_push(uint16_t val) {
+    memory[sp - 2] = val & 0xff;
+    memory[sp - 1] = val >> 8;
+    sp -= 2;
+}
+
+uint16_t CPU::stack_pop() {
+    uint16_t val = memory[sp] | (memory[sp + 1] << 8);
+    sp += 2;
+    return val;
+}
+
 bool CPU::get_parity(uint16_t n){
     bool parity = 0;
     while (n)
@@ -158,7 +170,7 @@ void CPU::execute() {
     std::cout << "OPCODE: 0x" << std::hex << int(opcode) << std::dec << std::endl;
     switch (opcode) {
 
-        // -------------------------0x-------------------------  
+        // -------------------------0x-------------------------  //
 
         case 0x00:
             std::cout << "NOP" << std::endl;
@@ -267,7 +279,7 @@ void CPU::execute() {
             break;
 
 
-        // -------------------------1x------------------------- 
+        // -------------------------1x------------------------- //
 
         case 0x11:
             std::cout << "LXI D, D16" << std::endl;
@@ -370,7 +382,7 @@ void CPU::execute() {
             break;
             }
 
-        // -------------------------2x------------------------- 
+        // -------------------------2x------------------------- //
         
         
         case 0x21:
@@ -473,19 +485,505 @@ void CPU::execute() {
 
 
 
+        // -------------------------3x------------------------- //
 
-
-
-
-
-        // -------------------------3x------------------------- 
 
         case 0x31:
             std::cout << "LXI SP, D16" << std::endl;
             sp = memory[pc + 1] | memory[pc + 2] << 8;
-            std::cout << "stack pointer is: " << sp << std::endl;
             pc += 3;
             break;
+            
+        case 0x32:
+            {
+            std::cout << "STA adr" << std::endl;
+            uint16_t new_addr = memory[pc + 1] | memory[pc + 2] << 8;
+            memory[new_addr] = a;
+            pc += 3;
+            break;
+            }
+
+        case 0x33:
+            std::cout << "INX SP" << std::endl;
+            sp += 1;
+            pc += 1;
+            break;
+            
+        case 0x34:
+            std::cout << "INR M" << std::endl;
+            set_flags_add(memory[hl], 1, 0);
+            memory[hl] += 1;
+            pc += 1;
+            break;
+            
+        case 0x35:
+            std::cout << "DCR M" << std::endl;
+            set_flags_sub(memory[hl], 1, 0);
+            memory[hl] -= 1;
+            pc += 1;
+            break;
+            
+        case 0x36:
+            std::cout << "MVI M,D8" << std::endl;
+            memory[hl] = memory[pc + 1];
+            pc += 2;
+            break;
+            
+        case 0x37:
+            std::cout << "STC" << std::endl;
+            flag_c = 1;
+            pc += 1;
+            break;
+            
+            
+        case 0x39:
+            std::cout << "DAD SP" << std::endl;
+            flag_c = (hl + sp) > 0xffff;
+            hl = hl + sp;
+            pc += 1;    
+            break;
+            
+        case 0x3a:
+            {
+            std::cout << "LDA adr" << std::endl;
+            uint16_t new_addr = memory[pc + 1] | memory[pc + 2] << 8;
+            a = memory[new_addr];
+            pc += 3;
+            break;
+            }
+
+        case 0x3b:
+            std::cout << "DCX SP" << std::endl;
+            sp -= 1;
+            pc += 1;
+            break;
+            
+        case 0x3c:
+            std::cout << "INR A" << std::endl;
+            set_flags_add(a, 1, 0);
+            a += 1;
+            pc += 1;
+            break;
+            
+        case 0x3d:
+            std::cout << "DCR A" << std::endl;
+            set_flags_sub(a, 1, 0);
+            a -= 1;
+            pc += 1;
+            break;
+            
+        case 0x3e:
+            std::cout << "MVI A,D8" << std::endl;
+            a = memory[pc + 1];
+            pc += 2;
+            break;
+            
+        case 0x3f:
+            std::cout << "CMC" << std::endl;
+            flag_c = ~flag_c;
+            pc += 1;
+            break;
+
+
+        // -------------------------4x------------------------- //
+
+        case 0x40:
+            std::cout << "MOV B, B" << std::endl; 
+            *b = *b;
+            pc += 1;
+            break;
+
+        case 0x41:
+            std::cout << "MOV B, C" << std::endl; 
+            *b = *c;
+            pc += 1;
+            break;
+
+        case 0x42:
+            std::cout << "MOV B, D" << std::endl; 
+            *b = *d;
+            pc += 1;
+            break;
+
+        case 0x43:
+            std::cout << "MOV B, E" << std::endl; 
+            *b = *e;
+            pc += 1;
+            break;
+
+        case 0x44:
+            std::cout << "MOV B, H" << std::endl; 
+            *b = *h;
+            pc += 1;
+            break;
+
+        case 0x45:
+            std::cout << "MOV B, L" << std::endl; 
+            *b = *l;
+            pc += 1;
+            break;
+
+        case 0x46:
+            std::cout << "MOV B, M" << std::endl; 
+            *b = memory[hl];
+            pc += 1;
+            break;
+
+        case 0x47:
+            std::cout << "MOV B, A" << std::endl; 
+            *b = a;
+            pc += 1;
+            break;
+
+        case 0x48:
+            std::cout << "MOV C, B" << std::endl; 
+            *c = *b;
+            pc += 1;
+            break;
+
+        case 0x49:
+            std::cout << "MOV C, C" << std::endl; 
+            *c = *c;
+            pc += 1;
+            break;
+
+        case 0x4a:
+            std::cout << "MOV C, D" << std::endl; 
+            *c = *d;
+            pc += 1;
+            break;
+
+        case 0x4b:
+            std::cout << "MOV C, E" << std::endl; 
+            *c = *e;
+            pc += 1;
+            break;
+
+        case 0x4c:
+            std::cout << "MOV C, H" << std::endl; 
+            *c = *h;
+            pc += 1;
+            break;
+
+        case 0x4d:
+            std::cout << "MOV C, L" << std::endl; 
+            *c = *l;
+            pc += 1;
+            break;
+
+        case 0x4e:
+            std::cout << "MOV C, M" << std::endl; 
+            *c = memory[hl];
+            pc += 1;
+            break;
+
+        case 0x4f:
+            std::cout << "MOV C, A" << std::endl; 
+            *c = a;
+            pc += 1;
+            break;
+
+        // -------------------------5x------------------------- //
+
+        case 0x50:
+            std::cout << "MOV D, B" << std::endl; 
+            *d = *b;
+            pc += 1;
+            break;
+
+        case 0x51:
+            std::cout << "MOV D, C" << std::endl; 
+            *d = *c;
+            pc += 1;
+            break;
+
+        case 0x52:
+            std::cout << "MOV D, D" << std::endl; 
+            *d = *d;
+            pc += 1;
+            break;
+
+        case 0x53:
+            std::cout << "MOV D, E" << std::endl; 
+            *d = *e;
+            pc += 1;
+            break;
+
+        case 0x54:
+            std::cout << "MOV D, H" << std::endl; 
+            *d = *h;
+            pc += 1;
+            break;
+
+        case 0x55:
+            std::cout << "MOV D, L" << std::endl; 
+            *d = *l;
+            pc += 1;
+            break;
+
+        case 0x56:
+            std::cout << "MOV D, M" << std::endl; 
+            *d = memory[hl];
+            pc += 1;
+            break;
+
+        case 0x57:
+            std::cout << "MOV D, A" << std::endl; 
+            *b = a;
+            pc += 1;
+            break;
+
+        case 0x58:
+            std::cout << "MOV E, B" << std::endl; 
+            *e = *b;
+            pc += 1;
+            break;
+
+        case 0x59:
+            std::cout << "MOV E, C" << std::endl; 
+            *e = *c;
+            pc += 1;
+            break;
+
+        case 0x5a:
+            std::cout << "MOV E, D" << std::endl; 
+            *e = *d;
+            pc += 1;
+            break;
+
+        case 0x5b:
+            std::cout << "MOV E, E" << std::endl; 
+            *e = *e;
+            pc += 1;
+            break;
+
+        case 0x5c:
+            std::cout << "MOV E, H" << std::endl; 
+            *e = *h;
+            pc += 1;
+            break;
+
+        case 0x5d:
+            std::cout << "MOV E, L" << std::endl; 
+            *e = *l;
+            pc += 1;
+            break;
+
+        case 0x5e:
+            std::cout << "MOV E, M" << std::endl; 
+            *e = memory[hl];
+            pc += 1;
+            break;
+
+        case 0x5f:
+            std::cout << "MOV E, A" << std::endl; 
+            *e = a;
+            pc += 1;
+            break;
+
+
+        // -------------------------6x------------------------- //
+        
+        
+        case 0x60:
+            std::cout << "MOV H, B" << std::endl; 
+            *h = *b;
+            pc += 1;
+            break;
+            
+        case 0x61:
+            std::cout << "MOV H, C" << std::endl; 
+            *h = *c;
+            pc += 1;
+            break;
+
+        case 0x62:
+            std::cout << "MOV H, D" << std::endl; 
+            *h = *d;
+            pc += 1;
+            break;
+
+        case 0x63:
+            std::cout << "MOV H, E" << std::endl; 
+            *h = *e;
+            pc += 1;
+            break;
+
+        case 0x64:
+            std::cout << "MOV H, H" << std::endl; 
+            *h = *h;
+            pc += 1;
+            break;
+
+        case 0x65:
+            std::cout << "MOV H, L" << std::endl; 
+            *h = *l;
+            pc += 1;
+            break;
+
+        case 0x66:
+            std::cout << "MOV H, M" << std::endl; 
+            *h = memory[hl];
+            pc += 1;
+            break;
+
+        case 0x67:
+            std::cout << "MOV H, A" << std::endl; 
+            *h = a;
+            pc += 1;
+            break;
+
+        case 0x68:
+            std::cout << "MOV L, B" << std::endl; 
+            *l = *b;
+            pc += 1;
+            break;
+
+        case 0x69:
+            std::cout << "MOV L, C" << std::endl; 
+            *l = *c;
+            pc += 1;
+            break;
+
+        case 0x6a:
+            std::cout << "MOV L, D" << std::endl; 
+            *l = *d;
+            pc += 1;
+            break;
+
+        case 0x6b:
+            std::cout << "MOV L, E" << std::endl; 
+            *l = *e;
+            pc += 1;
+            break;
+
+        case 0x6c:
+            std::cout << "MOV L, H" << std::endl; 
+            *l = *h;
+            pc += 1;
+            break;
+
+        case 0x6d:
+            std::cout << "MOV L, L" << std::endl; 
+            *l = *l;
+            pc += 1;
+            break;
+
+        case 0x6e:
+            std::cout << "MOV L, M" << std::endl; 
+            *l = memory[hl];
+            pc += 1;
+            break;
+
+        case 0x6f:
+            std::cout << "MOV L, A" << std::endl; 
+            *l = a;
+            pc += 1;
+            break;
+
+
+        // -------------------------7x------------------------- //
+
+        case 0x70:
+            std::cout << "MOV M, B" << std::endl; 
+            memory[hl] = *b;
+            pc += 1;
+            break;
+            
+        case 0x71:
+            std::cout << "MOV M, C" << std::endl; 
+            memory[hl] = *c;
+            pc += 1;
+            break;
+
+        case 0x72:
+            std::cout << "MOV M, D" << std::endl; 
+            memory[hl] = *d;
+            pc += 1;
+            break;
+
+        case 0x73:
+            std::cout << "MOV M, E" << std::endl; 
+            memory[hl] = *e;
+            pc += 1;
+            break;
+
+        case 0x74:
+            std::cout << "MOV M, H" << std::endl; 
+            memory[hl] = *h;
+            pc += 1;
+            break;
+
+        case 0x75:
+            std::cout << "MOV M, L" << std::endl; 
+            memory[hl] = *l;
+            pc += 1;
+            break;
+
+        case 0x76:
+            std::cout << "HLT" << std::endl; 
+            pc += 1;
+            break;
+
+        case 0x77:
+            std::cout << "MOV M, A" << std::endl; 
+            memory[hl] = a;
+            pc += 1;
+            break;
+
+        case 0x78:
+            std::cout << "MOV A, B" << std::endl; 
+            a = *b;
+            pc += 1;
+            break;
+
+        case 0x79:
+            std::cout << "MOV A, C" << std::endl; 
+            a = *c;
+            pc += 1;
+            break;
+
+        case 0x7a:
+            std::cout << "MOV A, D" << std::endl; 
+            a = *d;
+            pc += 1;
+            break;
+
+        case 0x7b:
+            std::cout << "MOV A, E" << std::endl; 
+            a = *e;
+            pc += 1;
+            break;
+
+        case 0x7c:
+            std::cout << "MOV A, H" << std::endl; 
+            a = *h;
+            pc += 1;
+            break;
+
+        case 0x7d:
+            std::cout << "MOV A, L" << std::endl; 
+            a = *l;
+            pc += 1;
+            break;
+
+        case 0x7e:
+            std::cout << "MOV A, M" << std::endl; 
+            a = memory[hl];
+            pc += 1;
+            break;
+
+        case 0x7f:
+            std::cout << "MOV A, A" << std::endl; 
+            a = a;
+            pc += 1;
+            break;
+
+        // -------------------------cx------------------------- //
+
+
+
+
 
         case 0xc3:
             std::cout << "JMP adr";

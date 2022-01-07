@@ -29,7 +29,7 @@ class CPU{
     uint16_t pc;
     uint16_t sp;
     uint8_t opcode;
-    uint8_t memory[0x10000];
+    uint8_t memory[0x10000]; // 65,536B
     
     public:
     CPU();
@@ -39,4 +39,9 @@ class CPU{
     void set_flags_sub(uint8_t op1, uint8_t op2, bool change_carry);
     bool get_parity(uint16_t n);
     bool get_halfcarry(int a, int b);
+
+    void handle_0x(uint8_t opcode);
+    void handle_1x(uint8_t opcode);
+    void handle_2x(uint8_t opcode);
+    void handle_3x(uint8_t opcode);
 };

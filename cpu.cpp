@@ -38,7 +38,7 @@ bool CPU::get_parity(uint16_t n){
         parity = !parity;
         n     = n & (n - 1);
     }    
-    return parity;
+    return !parity;
 }
 
 bool CPU::get_carry(uint8_t op1, uint8_t op2) {
@@ -51,11 +51,11 @@ void CPU::set_flags_sub(uint8_t op1, uint8_t op2, bool change_carry) {
     uint16_t answer = op1 - op2;
     std::cout << std::hex << "Sub answer is: " << answer << std::dec << "/" << answer << std::endl;
     // Sign flag
-    flag_s = answer & 0x80;
+    flag_s = ((answer & 0x80) != 0);
     // Zero flag
     flag_z = ((answer & 0xff) == 0);
     // Parity flag
-    flag_p = !get_parity(answer);
+    flag_p = get_parity(answer);
     // Carry flag
     if (change_carry) flag_c = !get_carry(op1, op2 * - 1);
     // Half carry flag
@@ -71,7 +71,7 @@ void CPU::set_flags_add(uint8_t op1, uint8_t op2, bool change_carry) {
     // Zero flag
     flag_z = ((answer & 0xff) == 0);
     // Parity flag
-    flag_p = !get_parity(answer);
+    flag_p = get_parity(answer);
     // Carry flag
     if (change_carry) flag_c = get_carry(op1, op2);
     // Half carry flag
@@ -1169,7 +1169,263 @@ void CPU::execute() {
         // -------------------------ax------------------------- //
 
 
+        case 0xa0:
+            std::cout << "ANA B" << std::endl;
+            flag_c = 0;
+            flag_p = get_parity(a & *b);
+            flag_z  = ((a & *b) == 0);
+            flag_s  = (((a & *b) & 0x80) != 0);
+            a = a & *b;
+            break;    
+
+        case 0xa1:
+            std::cout << "ANA C" << std::endl;
+            flag_c = 0;
+            flag_p = get_parity(a & *c);
+            flag_z  = ((a & *c) == 0);
+            flag_s  = (((a & *c) & 0x80) != 0);
+            a = a & *c;
+            break;   
+
+        case 0xa2:
+            std::cout << "ANA D" << std::endl;
+            flag_c = 0;
+            flag_p = get_parity(a & *d);
+            flag_z  = ((a & *d) == 0);
+            flag_s  = (((a & *d) & 0x80) != 0);
+            a = a & *d;
+            break;  
+
+        case 0xa3:
+            std::cout << "ANA E" << std::endl;
+            flag_c = 0;
+            flag_p = get_parity(a & *e);
+            flag_z  = ((a & *e) == 0);
+            flag_s  = (((a & *e) & 0x80) != 0);
+            a = a & *e;
+            break;    
+
+        case 0xa4:
+            std::cout << "ANA H" << std::endl;
+            flag_c = 0;
+            flag_p = get_parity(a & *h);
+            flag_z  = ((a & *h) == 0);
+            flag_s  = (((a & *h) & 0x80) != 0);
+            a = a & *h;
+            break;   
+
+        case 0xa5:
+            std::cout << "ANA L" << std::endl;
+            flag_c = 0;
+            flag_p = get_parity(a & *l);
+            flag_z  = ((a & *l) == 0);
+            flag_s  = (((a & *l) & 0x80) != 0);
+            a = a & *l;
+            break;  
+
+        case 0xa6:
+            std::cout << "ANA M" << std::endl;
+            flag_c = 0;
+            flag_p = get_parity(a & memory[hl]);
+            flag_z  = ((a & memory[hl]) == 0);
+            flag_s  = (((a & memory[hl]) & 0x80) != 0);
+            a = a & memory[hl];
+            break;    
+
+        case 0xa7:
+            std::cout << "ANA A" << std::endl;
+            flag_c = 0;
+            flag_p = get_parity(a & a);
+            flag_z  = ((a & a) == 0);
+            flag_s  = (((a & a) & 0x80) != 0);
+            a = a & a;
+            break;   
+
+        case 0xa8:
+            std::cout << "XRA B" << std::endl;
+            flag_c = 0;
+            flag_p = get_parity((a ^ *b));
+            flag_z  = ((a ^ *b) == 0);
+            flag_s  = (((a ^ *b) & 0x80) != 0);
+            a = a ^ *b;
+            break;  
+
+        case 0xa9:
+            std::cout << "XRA C" << std::endl;
+            flag_c = 0;
+            flag_p = get_parity((a ^ *c));
+            flag_z  = ((a ^ *c) == 0);
+            flag_s  = (((a ^ *c) & 0x80) != 0);
+            a = a ^ *c;
+            break;    
+
+        case 0xaa:
+            std::cout << "XRA D" << std::endl;
+            flag_c = 0;
+            flag_p = get_parity((a ^ *d));
+            flag_z  = ((a ^ *d) == 0);
+            flag_s  = (((a ^ *d) & 0x80) != 0);
+            a = a ^ *d;
+            break;   
+
+        case 0xab:
+            std::cout << "XRA E" << std::endl;
+            flag_c = 0;
+            flag_p = get_parity((a ^ *e));
+            flag_z  = ((a ^ *e) == 0);
+            flag_s  = (((a ^ *e) & 0x80) != 0);
+            a = a ^ *e;
+            break;  
+
+        case 0xac:
+            std::cout << "XRA H" << std::endl;
+            flag_c = 0;
+            flag_p = get_parity((a ^ *h));
+            flag_z  = ((a ^ *h) == 0);
+            flag_s  = (((a ^ *h) & 0x80) != 0);
+            a = a ^ *h;
+            break;  
+
+        case 0xad:
+            std::cout << "XRA L" << std::endl;
+            flag_c = 0;
+            flag_p = get_parity((a ^ *l));
+            flag_z  = ((a ^ *l) == 0);
+            flag_s  = (((a ^ *l) & 0x80) != 0);
+            a = a ^ *l;
+            break;   
+
+        case 0xae:
+            std::cout << "XRA M" << std::endl;
+            flag_c = 0;
+            flag_p = get_parity((a ^ memory[hl]));
+            flag_z  = ((a ^ memory[hl]) == 0);
+            flag_s  = (((a ^ memory[hl]) & 0x80) != 0);
+            a = a ^ memory[hl];
+            break;    
+
+         case 0xaf:
+            std::cout << "XRA A" << std::endl;
+            flag_c = 0;
+            flag_p = get_parity(0);
+            flag_z  = 0;
+            flag_s  = 0;
+            a = 0;
+            break;             
         // -------------------------bx------------------------- //
+
+
+        case 0xb0:
+            std::cout << "ORA B" << std::endl;
+            flag_c = 0;
+            flag_p = get_parity(a | *b);
+            flag_z  = ((a | *b) == 0);
+            flag_s  = (((a | *b) & 0x80) != 0);
+            a = a | *b;
+            break;    
+
+        case 0xb1:
+            std::cout << "ORA C" << std::endl;
+            flag_c = 0;
+            flag_p = get_parity(a | *c);
+            flag_z  = ((a | *c) == 0);
+            flag_s  = (((a | *c) & 0x80) != 0);
+            a = a | *c;
+            break;   
+
+        case 0xb2:
+            std::cout << "ORA D" << std::endl;
+            flag_c = 0;
+            flag_p = get_parity(a | *d);
+            flag_z  = ((a | *d) == 0);
+            flag_s  = (((a | *d) & 0x80) != 0);
+            a = a | *d;
+            break;  
+
+        case 0xb3:
+            std::cout << "ORA E" << std::endl;
+            flag_c = 0;
+            flag_p = get_parity(a | *e);
+            flag_z  = ((a | *e) == 0);
+            flag_s  = (((a | *e) & 0x80) != 0);
+            a = a | *e;
+            break;    
+
+        case 0xb4:
+            std::cout << "ORA H" << std::endl;
+            flag_c = 0;
+            flag_p = get_parity(a | *h);
+            flag_z  = ((a | *h) == 0);
+            flag_s  = (((a | *h) & 0x80) != 0);
+            a = a | *h;
+            break;   
+
+        case 0xb5:
+            std::cout << "ORA L" << std::endl;
+            flag_c = 0;
+            flag_p = get_parity(a | *l);
+            flag_z  = ((a | *l) == 0);
+            flag_s  = (((a | *l) & 0x80) != 0);
+            a = a | *l;
+            break;  
+
+        case 0xb6:
+            std::cout << "ORA M" << std::endl;
+            flag_c = 0;
+            flag_p = get_parity(a | memory[hl]);
+            flag_z  = ((a | memory[hl]) == 0);
+            flag_s  = (((a | memory[hl]) & 0x80) != 0);
+            a = a | memory[hl];
+            break;    
+
+        case 0xb7:
+            std::cout << "ORA A" << std::endl;
+            flag_c = 0;
+            flag_p = get_parity(a | a);
+            flag_z  = ((a | a) == 0);
+            flag_s  = (((a | a) & 0x80) != 0);
+            a = a | a;
+            break;   
+
+        case 0xb8:
+            std::cout << "CMP B" << std::endl;
+            set_flags_sub(a, *b, 1);
+            break;  
+
+        case 0xb9:
+            std::cout << "CMP C" << std::endl;
+            set_flags_sub(a, *c, 1);    
+            break;    
+
+        case 0xba:
+            std::cout << "CMP D" << std::endl;
+            set_flags_sub(a, *d, 1);
+            break;   
+
+        case 0xbb:
+            std::cout << "CMP E" << std::endl;
+            set_flags_sub(a, *e, 1);
+            break;  
+
+        case 0xbc:
+            std::cout << "CMP H" << std::endl;
+            set_flags_sub(a, *h, 1);
+            break;  
+
+        case 0xbd:
+            std::cout << "CMP L" << std::endl;
+            set_flags_sub(a, *l, 1);
+            break;   
+
+        case 0xbe:
+            std::cout << "CMP M" << std::endl;
+            set_flags_sub(a, memory[hl], 1);
+            break;    
+
+         case 0xbf:
+            std::cout << "CMP A" << std::endl;
+            set_flags_sub(a, a, 1);
+            break;     
 
 
         // -------------------------cx------------------------- //

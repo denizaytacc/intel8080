@@ -41,98 +41,51 @@ bool CPU::get_parity(uint16_t n){
     return parity;
 }
 
-bool get_halfcarry(int a, int b){
-	return ((((a & 0xF) + (b & 0xF)) & 0x10) == 0x10);
+bool CPU::get_carry(uint8_t op1, uint8_t op2) {
+	int16_t answer = op1 + op2;
+	int16_t carry = answer ^ op1 ^ op2;
+	return (carry & (1 << 8)) != 0;
 }
-
 
 void CPU::set_flags_sub(uint8_t op1, uint8_t op2, bool change_carry) {
     uint16_t answer = op1 - op2;
+    std::cout << std::hex << "Sub answer is: " << answer << std::dec << "/" << answer << std::endl;
     // Sign flag
-    if (answer & 0x80) {
-        flag_s = 1;
-    }
-    else {
-        flag_s = 0;
-    }
+    flag_s = answer & 0x80;
     // Zero flag
-    if ((answer & 0xff) == 0) {
-        flag_z = 0;
-    }
-    else {
-        flag_z = 0;
-    }
+    flag_z = ((answer & 0xff) == 0);
     // Parity flag
-    if (get_parity(answer)) {
-        flag_p = 0;
-    }
-    else {
-        flag_p = 1;
-    }
+    flag_p = !get_parity(answer);
     // Carry flag
-    if (change_carry) {
-        if (answer > 0xff) {
-            flag_c = 0;
-        }
-        else {
-            flag_c = 1;
-        }
-    }
-    // Half carry flag, should it really be ?? 
-    if (((((op1 & 0xF) + (op2 & 0xF)) & 0x10) == 0x10)) {
-        flag_hc = 0;
-    }
-
-    else {
-        flag_hc = 1;
-    }
+    if (change_carry) flag_c = !get_carry(op1, op2 * - 1);
+    // Half carry flag
+    flag_hc = ((((op1 & 0xF) + (-1 * op2 & 0xF)) & 0x10) == 0x10);//(((op1 & 0xF) - (op2 & 0xF)) < 0);
 
 }
-
 
 void CPU::set_flags_add(uint8_t op1, uint8_t op2, bool change_carry) {
     uint16_t answer = op1 + op2;
+    std::cout << std::hex << "Add answer is: "  << answer << std::dec << std::endl;
     // Sign flag
-    if (answer & 0x80) {
-        flag_s = 1;
-    }
-    else {
-        flag_s = 0;
-    }
+    flag_s = ((answer & 0x80) != 0);
     // Zero flag
-    if ((answer & 0xff) == 0) {
-        flag_z = 0;
-    }
-    else {
-        flag_z = 0;
-    }
+    flag_z = ((answer & 0xff) == 0);
     // Parity flag
-    if (get_parity(answer)) {
-        flag_p = 0;
-    }
-    else {
-        flag_p = 1;
-    }
+    flag_p = !get_parity(answer);
     // Carry flag
-    if (change_carry) {
-        if (answer > 0xff) {
-            flag_c = 0;
-        }
-        else {
-            flag_c = 1;
-        }
-    }
+    if (change_carry) flag_c = get_carry(op1, op2);
     // Half carry flag
-    if (((((op1 & 0xF) + (op2 & 0xF)) & 0x10) == 0x10)) {
-        flag_hc = 0;
-    }
-
-    else {
-        flag_hc = 1;
-    }
+    flag_hc = ((((op1 & 0xF) + (op2 & 0xF)) & 0x10) == 0x10);
 
 }
 
+void CPU::debug() {
+    std::cout << "Sign: " << int(flag_s) << std::endl;
+    std::cout << "Zero: " << int(flag_z) << std::endl;
+    std::cout << "Parity: " << int(flag_p) << std::endl;
+    std::cout << "Carry: " << int(flag_c) <<std::endl;
+    std::cout << "Half Carry: " << int(flag_hc) << std::endl;
+}
 
 
 void CPU::load_rom(const char* fileName) { 
@@ -979,10 +932,247 @@ void CPU::execute() {
             pc += 1;
             break;
 
+
+
+        // -------------------------8x------------------------- //
+
+
+
+        case 0x80:
+            std::cout << "ADD B" << std::endl;
+            set_flags_add(a, *b, 1);
+            a = a + *b;
+            pc += 1;
+            break;
+
+        case 0x81:
+            std::cout << "ADD C" << std::endl;
+            set_flags_add(a, *c, 1);
+            a = a + *c;
+            pc += 1;
+            break;
+            
+        case 0x82:
+            std::cout << "ADD D" << std::endl;
+            set_flags_add(a, *d, 1);
+            a = a + *d;
+            pc += 1;
+            break;
+            
+        case 0x83:
+            std::cout << "ADD E" << std::endl;
+            set_flags_add(a, *e, 1);
+            a = a + *e;
+            pc += 1;
+            break;
+            
+        case 0x84:
+            std::cout << "ADD H" << std::endl;
+            set_flags_add(a, *h, 1);
+            a = a + *h;
+            pc += 1;
+            break;
+            
+        case 0x85:
+            std::cout << "ADD L" << std::endl;
+            set_flags_add(a, *l, 1);
+            a = a + *l;
+            pc += 1;
+            break;
+            
+        case 0x86:
+            std::cout << "ADD M" << std::endl;
+            set_flags_add(a, memory[hl], 1);
+            a = a + memory[hl];
+            pc += 1;
+            break;
+            
+        case 0x87:
+            std::cout << "ADD A" << std::endl;
+            set_flags_add(a, a, 1);
+            a = a + a;
+            pc += 1;
+            break;
+            
+        case 0x88:
+            std::cout << "ADC B" << std::endl;
+            set_flags_add(a, *b + flag_c, 1);
+            a = a + *b + flag_c;
+            pc += 1;
+            break;
+            
+        case 0x89:
+            std::cout << "ADC C" << std::endl;
+            set_flags_add(a, *c + flag_c, 1);
+            a = a + *c + flag_c;
+            pc += 1;
+            break;
+            
+        case 0x8a:
+            std::cout << "ADC D" << std::endl;
+            set_flags_add(a, *d + flag_c, 1);
+            a = a + *d + flag_c;
+            pc += 1;
+            break;
+            
+        case 0x8b:
+            std::cout << "ADC E" << std::endl;
+            set_flags_add(a, *e + flag_c, 1);
+            a = a + *e + flag_c;
+            pc += 1;
+            break;
+            
+        case 0x8c:
+            std::cout << "ADC H" << std::endl;
+            set_flags_add(a, *h + flag_c, 1);
+            a = a + *h + flag_c;
+            pc += 1;
+            break;
+
+        case 0x8d:
+            std::cout << "ADC L" << std::endl;
+            set_flags_add(a, *b + flag_c, 1);
+            a = a + *l + flag_c;
+            pc += 1;
+            break;
+            
+        case 0x8e:
+            std::cout << "ADC M" << std::endl;
+            set_flags_add(a, memory[hl] + flag_c, 1);
+            a = a + memory[hl] + flag_c;
+            pc += 1;
+            break;
+            
+        case 0x8f:
+            std::cout << "ADC A" << std::endl;
+            set_flags_add(a, a + flag_c, 1);
+            a = a + a + flag_c;
+            pc += 1;
+            break;
+
+
+        // -------------------------9x------------------------- //
+
+        case 0x90:
+            std::cout << "SUB B" << std::endl;
+            set_flags_sub(a, *b, 1);
+            a = a - *b;
+            pc += 1;
+            break;
+
+        case 0x91:
+            std::cout << "SUB C" << std::endl;
+            set_flags_sub(a, *c, 1);
+            a = a - *c;
+            pc += 1;
+            break;
+            
+        case 0x92:
+            std::cout << "SUB D" << std::endl;
+            set_flags_sub(a, *d, 1);
+            a = a - *d;
+            pc += 1;
+            break;
+            
+        case 0x93:
+            std::cout << "SUB E" << std::endl;
+            set_flags_sub(a, *e, 1);
+            a = a - *e;
+            pc += 1;
+            break;
+            
+        case 0x94:
+            std::cout << "SUB H" << std::endl;
+            set_flags_sub(a, *h, 1);
+            a = a - *h;
+            pc += 1;
+            break;
+            
+        case 0x95:
+            std::cout << "SUB L" << std::endl;
+            set_flags_sub(a, *l, 1);
+            a = a - *l;
+            pc += 1;
+            break;
+            
+        case 0x96:
+            std::cout << "SUB M" << std::endl;
+            set_flags_sub(a, memory[hl], 1);
+            a = a - memory[hl];
+            pc += 1;
+            break;
+            
+        case 0x97:
+            std::cout << "SUB A" << std::endl;
+            set_flags_sub(a, a, 1);
+            a = a - a;
+            pc += 1;
+            break;
+            
+        case 0x98:
+            std::cout << "SBB B" << std::endl;
+            set_flags_sub(a, *b + flag_c, 1);
+            a = a - (*b + flag_c);
+            pc += 1;
+            break;
+            
+        case 0x99:
+            std::cout << "SBB C" << std::endl;
+            set_flags_sub(a, *c + flag_c, 1);
+            a = a - (*c + flag_c);// a = a + c + cy
+            pc += 1;
+            break;
+            
+        case 0x9a:
+            std::cout << "SBB D" << std::endl;
+            set_flags_sub(a, *d + flag_c, 1);
+            a = a - (*d + flag_c);
+            pc += 1;
+            break;
+            
+        case 0x9b:
+            std::cout << "SBB E" << std::endl;
+            set_flags_sub(a, *e + flag_c, 1);
+            a = a - (*e + flag_c);
+            pc += 1;
+            break;
+            
+        case 0x9c:
+            std::cout << "SBB H" << std::endl;
+            set_flags_sub(a, *h + flag_c, 1);
+            a = a - (*h + flag_c);
+            pc += 1;
+            break;
+
+        case 0x9d:
+            std::cout << "SBB L" << std::endl;
+            set_flags_sub(a, *l + flag_c, 1);
+            a = a - (*l + flag_c);// a = a + l + cy
+            pc += 1;
+            break;
+            
+        case 0x9e:
+            std::cout << "SBB M" << std::endl;
+            set_flags_sub(a, memory[hl] + flag_c, 1);
+            a = a - (memory[hl] + flag_c);
+            pc += 1;
+            break;
+            
+        case 0x9f:
+            std::cout << "SBB A" << std::endl;
+            set_flags_sub(a, a + flag_c, 1);
+            a = a - (a + flag_c);
+            pc += 1;
+            break;
+
+
+        // -------------------------ax------------------------- //
+
+
+        // -------------------------bx------------------------- //
+
+
         // -------------------------cx------------------------- //
-
-
-
 
 
         case 0xc3:
@@ -995,6 +1185,14 @@ void CPU::execute() {
             std::cout << "CALL adr~ 0x" << std::hex << (memory[pc + 1] | (memory[pc + 2] << 8)) << std::dec << std::endl;
             // Implement stack
             pc = (memory[pc + 1] | (memory[pc + 2] << 8));
+
+        // -------------------------dx------------------------- //
+
+
+        // -------------------------ex------------------------- //
+        
+
+        // -------------------------fx------------------------- //
 
         // End of switch    
         break;  

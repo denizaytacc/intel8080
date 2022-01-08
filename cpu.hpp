@@ -33,10 +33,11 @@ class CPU{
     CPU();
     void execute();
     void load_rom(const char* fileName);
+    void debug();
     void set_flags_add(uint8_t op1, uint8_t op2, bool change_carry);
     void set_flags_sub(uint8_t op1, uint8_t op2, bool change_carry);
     bool get_parity(uint16_t n);
-    bool get_halfcarry(int a, int b);
+    bool get_carry(uint8_t op1, uint8_t op2);
 
     // Stack
     void stack_push(uint16_t val);

@@ -6,7 +6,7 @@ int main (int argc, char* argv[]){
     cpu.load_rom("invaders");
     //std::cout << argc << std::endl;
     int i = 0;
-    while (i < 100)    
+    while (i < 100000)    
     {    
         cpu.execute();    
         i += 1;

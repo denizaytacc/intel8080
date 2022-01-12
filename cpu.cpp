@@ -120,7 +120,7 @@ void CPU::load_rom(const char* fileName) {
 // double check every rotate command later
 void CPU::execute() {
     opcode = memory[pc];
-    std::cout << "OPCODE: 0x" << std::hex << int(opcode) << std::dec << std::endl;
+    std::cout << "OPCODE: 0x" << std::hex << int(opcode) << std::dec << " ";
     switch (opcode) {
 
         // -------------------------0x-------------------------  //
@@ -177,6 +177,10 @@ void CPU::execute() {
             flag_c = temp;
             pc += 1;
             }
+            break;
+
+        case 0x08:
+            pc += 1;
             break;
 
         case 0x09:
@@ -1176,6 +1180,7 @@ void CPU::execute() {
             flag_z  = ((a & *b) == 0);
             flag_s  = (((a & *b) & 0x80) != 0);
             a = a & *b;
+            pc += 1;
             break;    
 
         case 0xa1:
@@ -1185,6 +1190,7 @@ void CPU::execute() {
             flag_z  = ((a & *c) == 0);
             flag_s  = (((a & *c) & 0x80) != 0);
             a = a & *c;
+            pc += 1;
             break;   
 
         case 0xa2:
@@ -1194,6 +1200,7 @@ void CPU::execute() {
             flag_z  = ((a & *d) == 0);
             flag_s  = (((a & *d) & 0x80) != 0);
             a = a & *d;
+            pc += 1;
             break;  
 
         case 0xa3:
@@ -1203,6 +1210,7 @@ void CPU::execute() {
             flag_z  = ((a & *e) == 0);
             flag_s  = (((a & *e) & 0x80) != 0);
             a = a & *e;
+            pc += 1;
             break;    
 
         case 0xa4:
@@ -1212,6 +1220,7 @@ void CPU::execute() {
             flag_z  = ((a & *h) == 0);
             flag_s  = (((a & *h) & 0x80) != 0);
             a = a & *h;
+            pc += 1;
             break;   
 
         case 0xa5:
@@ -1221,6 +1230,7 @@ void CPU::execute() {
             flag_z  = ((a & *l) == 0);
             flag_s  = (((a & *l) & 0x80) != 0);
             a = a & *l;
+            pc += 1;
             break;  
 
         case 0xa6:
@@ -1230,6 +1240,7 @@ void CPU::execute() {
             flag_z  = ((a & memory[hl]) == 0);
             flag_s  = (((a & memory[hl]) & 0x80) != 0);
             a = a & memory[hl];
+            pc += 1;
             break;    
 
         case 0xa7:
@@ -1239,6 +1250,7 @@ void CPU::execute() {
             flag_z  = ((a & a) == 0);
             flag_s  = (((a & a) & 0x80) != 0);
             a = a & a;
+            pc += 1;
             break;   
 
         case 0xa8:
@@ -1248,6 +1260,7 @@ void CPU::execute() {
             flag_z  = ((a ^ *b) == 0);
             flag_s  = (((a ^ *b) & 0x80) != 0);
             a = a ^ *b;
+            pc += 1;
             break;  
 
         case 0xa9:
@@ -1257,6 +1270,7 @@ void CPU::execute() {
             flag_z  = ((a ^ *c) == 0);
             flag_s  = (((a ^ *c) & 0x80) != 0);
             a = a ^ *c;
+            pc += 1;
             break;    
 
         case 0xaa:
@@ -1266,6 +1280,7 @@ void CPU::execute() {
             flag_z  = ((a ^ *d) == 0);
             flag_s  = (((a ^ *d) & 0x80) != 0);
             a = a ^ *d;
+            pc += 1;
             break;   
 
         case 0xab:
@@ -1275,6 +1290,7 @@ void CPU::execute() {
             flag_z  = ((a ^ *e) == 0);
             flag_s  = (((a ^ *e) & 0x80) != 0);
             a = a ^ *e;
+            pc += 1;
             break;  
 
         case 0xac:
@@ -1284,6 +1300,7 @@ void CPU::execute() {
             flag_z  = ((a ^ *h) == 0);
             flag_s  = (((a ^ *h) & 0x80) != 0);
             a = a ^ *h;
+            pc += 1;
             break;  
 
         case 0xad:
@@ -1293,6 +1310,7 @@ void CPU::execute() {
             flag_z  = ((a ^ *l) == 0);
             flag_s  = (((a ^ *l) & 0x80) != 0);
             a = a ^ *l;
+            pc += 1;
             break;   
 
         case 0xae:
@@ -1302,6 +1320,7 @@ void CPU::execute() {
             flag_z  = ((a ^ memory[hl]) == 0);
             flag_s  = (((a ^ memory[hl]) & 0x80) != 0);
             a = a ^ memory[hl];
+            pc += 1;
             break;    
 
          case 0xaf:
@@ -1311,6 +1330,7 @@ void CPU::execute() {
             flag_z  = 0;
             flag_s  = 0;
             a = 0;
+            pc += 1;
             break;             
         // -------------------------bx------------------------- //
 
@@ -1322,6 +1342,7 @@ void CPU::execute() {
             flag_z  = ((a | *b) == 0);
             flag_s  = (((a | *b) & 0x80) != 0);
             a = a | *b;
+            pc += 1;
             break;    
 
         case 0xb1:
@@ -1331,6 +1352,7 @@ void CPU::execute() {
             flag_z  = ((a | *c) == 0);
             flag_s  = (((a | *c) & 0x80) != 0);
             a = a | *c;
+            pc += 1;
             break;   
 
         case 0xb2:
@@ -1340,6 +1362,7 @@ void CPU::execute() {
             flag_z  = ((a | *d) == 0);
             flag_s  = (((a | *d) & 0x80) != 0);
             a = a | *d;
+            pc += 1;
             break;  
 
         case 0xb3:
@@ -1349,6 +1372,7 @@ void CPU::execute() {
             flag_z  = ((a | *e) == 0);
             flag_s  = (((a | *e) & 0x80) != 0);
             a = a | *e;
+            pc += 1;
             break;    
 
         case 0xb4:
@@ -1358,6 +1382,7 @@ void CPU::execute() {
             flag_z  = ((a | *h) == 0);
             flag_s  = (((a | *h) & 0x80) != 0);
             a = a | *h;
+            pc += 1;
             break;   
 
         case 0xb5:
@@ -1367,6 +1392,7 @@ void CPU::execute() {
             flag_z  = ((a | *l) == 0);
             flag_s  = (((a | *l) & 0x80) != 0);
             a = a | *l;
+            pc += 1;
             break;  
 
         case 0xb6:
@@ -1376,6 +1402,7 @@ void CPU::execute() {
             flag_z  = ((a | memory[hl]) == 0);
             flag_s  = (((a | memory[hl]) & 0x80) != 0);
             a = a | memory[hl];
+            pc += 1;
             break;    
 
         case 0xb7:
@@ -1385,70 +1412,505 @@ void CPU::execute() {
             flag_z  = ((a | a) == 0);
             flag_s  = (((a | a) & 0x80) != 0);
             a = a | a;
+            pc += 1;
             break;   
 
         case 0xb8:
             std::cout << "CMP B" << std::endl;
             set_flags_sub(a, *b, 1);
+            pc += 1;
             break;  
 
         case 0xb9:
             std::cout << "CMP C" << std::endl;
             set_flags_sub(a, *c, 1);    
+            pc += 1;
             break;    
 
         case 0xba:
             std::cout << "CMP D" << std::endl;
             set_flags_sub(a, *d, 1);
+            pc += 1;
             break;   
 
         case 0xbb:
             std::cout << "CMP E" << std::endl;
             set_flags_sub(a, *e, 1);
+            pc += 1;
             break;  
 
         case 0xbc:
             std::cout << "CMP H" << std::endl;
             set_flags_sub(a, *h, 1);
+            pc += 1;
             break;  
 
         case 0xbd:
             std::cout << "CMP L" << std::endl;
             set_flags_sub(a, *l, 1);
+            pc += 1;
             break;   
 
         case 0xbe:
             std::cout << "CMP M" << std::endl;
             set_flags_sub(a, memory[hl], 1);
+            pc += 1;
             break;    
 
          case 0xbf:
             std::cout << "CMP A" << std::endl;
             set_flags_sub(a, a, 1);
+            pc += 1;
             break;     
 
 
         // -------------------------cx------------------------- //
+        case 0xc0:
+            std::cout << "RNZ" << std::endl;
+            pc += 1;
+            if (flag_z == 0) {
+                pc = stack_pop();
+            }
+            break;
 
+        case 0xc1:
+            std::cout << "POP B" << std::endl;
+            bc = stack_pop();
+            pc += 1;
+            break;
+
+        case 0xc2:
+            std::cout << "JNZ adr" << std::endl;
+            pc += 3;
+            if (flag_z == 0) {
+                pc = memory[pc + 1] | (memory[pc + 2] << 8); 
+            }
+            break;
 
         case 0xc3:
-            std::cout << "JMP adr";
-            std::cout << "~ is: 0x" << std::hex << (memory[pc + 1] | (memory[pc + 2] << 8)) << std::dec << std::endl;
+            std::cout << "JMP adr" << std::endl;
             pc = (memory[pc + 1] | (memory[pc + 2] << 8));
             break;
 
+        case 0xc4:
+            std::cout << "CNZ adr" << std::endl;
+            pc += 3;
+            if (flag_z == 0) {
+                stack_push(pc);
+                pc = memory[pc + 1] | (memory[pc + 2] << 8);
+            }
+            break;
+
+        case 0xc5:
+            std::cout << "PUSH B" << std::endl;
+            stack_push(bc);
+            pc += 3;
+            break;
+
+        case 0xc6:
+            std::cout << "ADI D8" << std::endl;
+            set_flags_add(a, memory[pc + 1], 1);
+            a = a + memory[pc + 1];
+            pc += 2;
+            break;
+
+        case 0xc7:
+            std::cout << "RST 0" << std::endl;
+            pc += 1;
+            stack_push(pc);
+            pc = 0x0000;
+            break;
+
+        case 0xc8:
+            std::cout << "RZ" << std::endl;
+            pc += 1;
+            if (flag_z) {
+                pc = stack_pop();
+            }
+            break;
+
+        case 0xc9:
+            std::cout << "RET" << std::endl;
+            pc = stack_pop();
+            break;
+
+        case 0xca:
+            std::cout << "JZ ADR" << std::endl;
+            pc += 3;
+            if (flag_z) {
+                pc = memory[pc + 1] | memory[pc + 2] << 8;
+            }
+            break;        
+
+        case 0xcc:
+            std::cout << "CZ ADR" << std::endl;
+            pc += 3;
+            if (flag_z) {
+                stack_push(pc);
+                pc = memory[pc + 1] | memory[pc + 2] << 8;
+            }
+            break;
+
         case 0xcd:
-            std::cout << "CALL adr~ 0x" << std::hex << (memory[pc + 1] | (memory[pc + 2] << 8)) << std::dec << std::endl;
-            // Implement stack
+            std::cout << "CALL adr" << std::endl;
+            pc += 3;
+            stack_push(pc);
             pc = (memory[pc + 1] | (memory[pc + 2] << 8));
+            break;
+
+        case 0xce:
+            std::cout << "ACI D8" << std::endl;
+            set_flags_add(a, memory[pc + 1] + flag_c, 1);
+            a = a + memory[pc + 1] + flag_c;
+            pc += 2;
+            break;  
+
+        case 0xcf:
+            std::cout << "RST 1" << std::endl;
+            pc += 1;
+            stack_push(pc);
+            pc = 0x0008;
+            break;        
 
         // -------------------------dx------------------------- //
+        case 0xd0:
+            std::cout << "RNC" << std::endl;
+            pc += 1;
+            if (flag_c == 0) {
+                pc = stack_pop();
+            }
+            break;
+
+        case 0xd1:
+            std::cout << "POP D" << std::endl;
+            de = stack_pop();
+            pc += 1;
+            break;
+
+        case 0xd2:
+            std::cout << "JNZ adr" << std::endl;
+            pc += 3;
+            if (flag_c == 0) {
+                pc = memory[pc + 1] | (memory[pc + 2] << 8); 
+            }
+            break;
+
+        case 0xd3:
+            // special OUT D8
+            pc += 1;
+            break;
+
+        case 0xd4:
+            std::cout << "CNC adr" << std::endl;
+            pc += 3;
+            if (flag_c == 0) {
+                stack_push(pc);
+                pc = memory[pc + 1] | (memory[pc + 2] << 8);
+            }
+            break;
+
+        case 0xd5:
+            std::cout << "PUSH D" << std::endl;
+            stack_push(de);
+            pc += 3;
+            break;
+
+        case 0xd6:
+            std::cout << "SUI D8" << std::endl;
+            set_flags_sub(a, memory[pc + 1], 1);
+            a = a - memory[pc + 1];
+            pc += 2;
+            break;
+
+        case 0xd7:
+            std::cout << "RST 2" << std::endl;
+            pc += 1;
+            stack_push(pc);
+            pc = 0x0010;
+            break;
+
+        case 0xd8:
+            std::cout << "RC" << std::endl;
+            pc += 1;
+            if (flag_c) {
+                pc = stack_pop();
+            }
+            break;
+
+        case 0xda:
+            std::cout << "JC ADR" << std::endl;
+            pc += 3;
+            if (flag_c) {
+                pc = memory[pc + 1] | memory[pc + 2] << 8;
+            }
+            break;        
+
+        case 0xdb:
+            // special IN D8
+            pc += 1;
+            break;
+
+        case 0xdc:
+            std::cout << "CC ADR" << std::endl;
+            pc += 3;
+            if (flag_c) {
+                stack_push(pc);
+                pc = memory[pc + 1] | memory[pc + 2] << 8;
+            }
+            break;
+
+        case 0xde:
+            std::cout << "SBI D8" << std::endl;
+            set_flags_sub(a, memory[pc + 1] + flag_c, 1);
+            a = a - (memory[pc + 1] + flag_c);
+            pc += 2;
+            break;  
+
+        case 0xdf:
+            std::cout << "RST 3" << std::endl;
+            pc += 1;
+            stack_push(pc);
+            pc = 0x0018;
+            break;        
 
 
         // -------------------------ex------------------------- //
         
+        case 0xe0:
+            std::cout << "RPO" << std::endl;
+            pc += 1;
+            if (flag_p == 0) {
+                pc = stack_pop();
+            }
+            break;
+
+        case 0xe1:
+            std::cout << "POP H" << std::endl;
+            hl = stack_pop();
+            pc += 1;
+            break;
+
+        case 0xe2:
+            std::cout << "JPO adr" << std::endl;
+            pc += 3;
+            if (flag_p == 0) {
+                pc = memory[pc + 1] | (memory[pc + 2] << 8); 
+            }
+            break;
+
+        case 0xe3:
+            {
+            std::cout << "XTHL" << std::endl;
+            uint8_t temp;
+            temp = memory[sp];
+            memory[sp] = *l;
+            *l = memory[sp];
+
+            temp = memory[sp + 1];
+            memory[sp + 1] = *h;
+            *h = temp;
+            break;
+            }
+
+        case 0xe4:
+            std::cout << "CPO adr" << std::endl;
+            pc += 3;
+            if (flag_p == 0) {
+                stack_push(pc);
+                pc = memory[pc + 1] | (memory[pc + 2] << 8);
+            }
+            break;
+
+        case 0xe5:
+            std::cout << "PUSH H" << std::endl;
+            stack_push(hl);
+            pc += 3;
+            break;
+
+        case 0xe6:
+            std::cout << "ANI D8" << std::endl;
+            flag_c = 0;
+            flag_p = get_parity(a & memory[pc + 1]);
+            flag_z  = ((a & memory[pc + 1]) == 0);
+            flag_s  = (((a & memory[pc + 1]) & 0x80) != 0);
+            a = a & memory[pc + 1];
+            pc += 2;
+            break;
+
+        case 0xe7:
+            std::cout << "RST 4" << std::endl;
+            pc += 1;
+            stack_push(pc);
+            pc = 0x0020;
+            break;
+
+        case 0xe8:
+            std::cout << "RPE" << std::endl;
+            pc += 1;
+            if (flag_p) {
+                pc = stack_pop();
+            }
+            break;
+
+        case 0xe9:
+            std::cout << "PCHL" << std::endl;
+            pc = hl;
+            break;
+
+        case 0xea:
+            std::cout << "JZ ADR" << std::endl;
+            pc += 3;
+            if (flag_p) {
+                pc = memory[pc + 1] | memory[pc + 2] << 8;
+            }
+            break;        
+
+        case 0xeb:
+            {
+            uint16_t temp = hl;
+            hl = de;
+            de = temp;
+            pc += 1;
+            break;
+            }
+
+        case 0xec:
+            std::cout << "CPE ADR" << std::endl;
+            pc += 3;
+            if (flag_p) {
+                stack_push(pc);
+                pc = memory[pc + 1] | memory[pc + 2] << 8;
+            }
+            break;
+
+        case 0xee:
+            std::cout << "XRI D8" << std::endl;
+            flag_c = 0;
+            flag_p = get_parity((a ^ memory[pc + 1]));
+            flag_z  = ((a ^ memory[pc + 1]) == 0);
+            flag_s  = (((a ^ memory[pc + 1]) & 0x80) != 0);
+            a = a ^ memory[pc + 1];
+            pc += 2;
+            break;  
+
+        case 0xef:
+            std::cout << "RST 5" << std::endl;
+            pc += 1;
+            stack_push(pc);
+            pc = 0x0028;
+            break;     
 
         // -------------------------fx------------------------- //
+
+        case 0xf0:
+            std::cout << "RP" << std::endl;
+            pc += 1;
+            if (flag_s == 0) {
+                pc = stack_pop();
+            }
+            break;
+
+        case 0xf1:
+            {
+            std::cout << "POP PSW" << std::endl;
+            uint16_t psw = stack_pop();
+            pc += 1;
+            break;
+            }
+
+        case 0xf2:
+            std::cout << "JP adr" << std::endl;
+            pc += 3;
+            if (flag_s == 0) {
+                pc = memory[pc + 1] | (memory[pc + 2] << 8); 
+            }
+            break;
+
+        case 0xf3: // Disable Interrupts
+            std::cout << "DI" << std::endl;
+            break;
+            
+
+        case 0xf4:
+            std::cout << "CP adr" << std::endl;
+            pc += 3;
+            if (flag_s == 0) {
+                stack_push(pc);
+                pc = memory[pc + 1] | (memory[pc + 2] << 8);
+            }
+            break;
+
+        case 0xf5:
+            {
+            std::cout << "PUSH PSW" << std::endl;
+            pc += 3;
+            break;
+            }
+
+        case 0xf6:
+            std::cout << "ORI D8" << std::endl;
+            flag_c = 0;
+            flag_p = get_parity(a | memory[pc + 1]);
+            flag_z  = ((a | memory[pc + 1]) == 0);
+            flag_s  = (((a | memory[pc + 1]) & 0x80) != 0);
+            a = a | memory[pc + 1];
+            pc += 2;
+            break;
+
+        case 0xf7:
+            std::cout << "RST 6" << std::endl;
+            pc += 1;
+            stack_push(pc);
+            pc = 0x0030;
+            break;
+
+        case 0xf8:
+            std::cout << "RM" << std::endl;
+            pc += 1;
+            if (flag_s) {
+                pc = stack_pop();
+            }
+            break;
+
+        case 0xf9:
+            std::cout << "SPHL" << std::endl;
+            sp = hl;
+            break;
+
+        case 0xfa:
+            std::cout << "JM ADR" << std::endl;
+            pc += 3;
+            if (flag_s) {
+                pc = memory[pc + 1] | memory[pc + 2] << 8;
+            }
+            break;        
+
+        case 0xfb: // enable interrupts
+            pc += 1;
+            break;
+            
+
+        case 0xfc:
+            std::cout << "CM ADR" << std::endl;
+            pc += 3;
+            if (flag_s) {
+                stack_push(pc);
+                pc = memory[pc + 1] | memory[pc + 2] << 8;
+            }
+            break;
+
+        case 0xfe:
+            std::cout << "CPI D8" << std::endl;
+            set_flags_sub(a, memory[pc + 1], 1);
+            pc += 2;
+            break;  
+
+        case 0xff:
+            std::cout << "RST 7" << std::endl;
+            pc += 1;
+            stack_push(pc);
+            pc = 0x0038;
+            break;  
 
         // End of switch    
         break;  

@@ -47,6 +47,22 @@ bool CPU::get_carry(uint8_t op1, uint8_t op2) {
 	return (carry & (1 << 8)) != 0;
 }
 
+void CPU::set_flags_add(uint8_t op1, uint8_t op2, bool change_carry) {
+    uint16_t answer = op1 + op2;
+    std::cout << std::hex << "Add answer is: "  << answer << std::dec << std::endl;
+    // Sign flag
+    flag_s = ((answer & 0x80) != 0);
+    // Zero flag
+    flag_z = ((answer & 0xff) == 0);
+    // Parity flag
+    flag_p = get_parity(answer);
+    // Carry flag
+    if (change_carry) flag_c = get_carry(op1, op2);
+    // Half carry flag
+    flag_hc = ((((op1 & 0xF) + (op2 & 0xF)) & 0x10) == 0x10);
+
+}
+
 void CPU::set_flags_sub(uint8_t op1, uint8_t op2, bool change_carry) {
     uint16_t answer = op1 - op2;
     std::cout << std::hex << "Sub answer is: " << answer << std::dec << "/" << answer << std::endl;
@@ -63,20 +79,27 @@ void CPU::set_flags_sub(uint8_t op1, uint8_t op2, bool change_carry) {
 
 }
 
-void CPU::set_flags_add(uint8_t op1, uint8_t op2, bool change_carry) {
-    uint16_t answer = op1 + op2;
-    std::cout << std::hex << "Add answer is: "  << answer << std::dec << std::endl;
-    // Sign flag
-    flag_s = ((answer & 0x80) != 0);
-    // Zero flag
-    flag_z = ((answer & 0xff) == 0);
-    // Parity flag
-    flag_p = get_parity(answer);
-    // Carry flag
-    if (change_carry) flag_c = get_carry(op1, op2);
-    // Half carry flag
-    flag_hc = ((((op1 & 0xF) + (op2 & 0xF)) & 0x10) == 0x10);
 
+void CPU::set_flags_bitwise(uint8_t op1, uint8_t op2, int operation) {
+    // 0 - AND
+    // 1 - OR
+    // 2 - X0R
+    flag_c = 0;
+    switch (operation) {
+        case 0: // Zero, Sign, Parity, Carry
+            flag_p = get_parity(op1 & op2);
+            flag_z  = ((op1 & op2) == 0);
+            flag_s  = (((a & *b) & 0x80) != 0);
+        case 1: // Zero, Sign, Parity, Carry
+            flag_p = get_parity(op1 | op2);
+            flag_z  = ((op1 | op2) == 0);
+            flag_s  = (((op1 | op2) & 0x80) != 0);
+        case 2: // Zero, Sign, Parity, Carry, Half-Carry
+            flag_p = get_parity(op1 ^ op2);
+            flag_z  = ((op1 ^ op2) == 0);
+            flag_s  = (((op1 ^ op2) & 0x80) != 0);
+            flag_hc = ((((op1 & 0xF) + (op2 & 0xF)) & 0x10) == 0x10);
+    }
 }
 
 void CPU::debug() {
@@ -237,6 +260,10 @@ void CPU::execute() {
 
 
         // -------------------------1x------------------------- //
+
+        case 0x10:
+            pc += 1;
+            break;
 
         case 0x11:
             std::cout << "LXI D, D16" << std::endl;
@@ -1175,161 +1202,113 @@ void CPU::execute() {
 
         case 0xa0:
             std::cout << "ANA B" << std::endl;
-            flag_c = 0;
-            flag_p = get_parity(a & *b);
-            flag_z  = ((a & *b) == 0);
-            flag_s  = (((a & *b) & 0x80) != 0);
+            set_flags_bitwise(a, *b, 0);
             a = a & *b;
             pc += 1;
             break;    
 
         case 0xa1:
             std::cout << "ANA C" << std::endl;
-            flag_c = 0;
-            flag_p = get_parity(a & *c);
-            flag_z  = ((a & *c) == 0);
-            flag_s  = (((a & *c) & 0x80) != 0);
+            set_flags_bitwise(a, *c, 0);
             a = a & *c;
             pc += 1;
             break;   
 
         case 0xa2:
             std::cout << "ANA D" << std::endl;
-            flag_c = 0;
-            flag_p = get_parity(a & *d);
-            flag_z  = ((a & *d) == 0);
-            flag_s  = (((a & *d) & 0x80) != 0);
+            set_flags_bitwise(a, *d, 0);
             a = a & *d;
             pc += 1;
             break;  
 
         case 0xa3:
             std::cout << "ANA E" << std::endl;
-            flag_c = 0;
-            flag_p = get_parity(a & *e);
-            flag_z  = ((a & *e) == 0);
-            flag_s  = (((a & *e) & 0x80) != 0);
+            set_flags_bitwise(a, *e, 0);
             a = a & *e;
             pc += 1;
             break;    
 
         case 0xa4:
             std::cout << "ANA H" << std::endl;
-            flag_c = 0;
-            flag_p = get_parity(a & *h);
-            flag_z  = ((a & *h) == 0);
-            flag_s  = (((a & *h) & 0x80) != 0);
+            set_flags_bitwise(a, *h, 0);
             a = a & *h;
             pc += 1;
             break;   
 
         case 0xa5:
             std::cout << "ANA L" << std::endl;
-            flag_c = 0;
-            flag_p = get_parity(a & *l);
-            flag_z  = ((a & *l) == 0);
-            flag_s  = (((a & *l) & 0x80) != 0);
+            set_flags_bitwise(a, *l, 0);
             a = a & *l;
             pc += 1;
             break;  
 
         case 0xa6:
             std::cout << "ANA M" << std::endl;
-            flag_c = 0;
-            flag_p = get_parity(a & memory[hl]);
-            flag_z  = ((a & memory[hl]) == 0);
-            flag_s  = (((a & memory[hl]) & 0x80) != 0);
+            set_flags_bitwise(a, memory[hl], 0);
             a = a & memory[hl];
             pc += 1;
             break;    
 
         case 0xa7:
             std::cout << "ANA A" << std::endl;
-            flag_c = 0;
-            flag_p = get_parity(a & a);
-            flag_z  = ((a & a) == 0);
-            flag_s  = (((a & a) & 0x80) != 0);
+            set_flags_bitwise(a, a, 0);
             a = a & a;
             pc += 1;
             break;   
 
         case 0xa8:
             std::cout << "XRA B" << std::endl;
-            flag_c = 0;
-            flag_p = get_parity((a ^ *b));
-            flag_z  = ((a ^ *b) == 0);
-            flag_s  = (((a ^ *b) & 0x80) != 0);
+            set_flags_bitwise(a, *b, 2);
             a = a ^ *b;
             pc += 1;
             break;  
 
         case 0xa9:
             std::cout << "XRA C" << std::endl;
-            flag_c = 0;
-            flag_p = get_parity((a ^ *c));
-            flag_z  = ((a ^ *c) == 0);
-            flag_s  = (((a ^ *c) & 0x80) != 0);
+            set_flags_bitwise(a, *c, 2);
             a = a ^ *c;
             pc += 1;
             break;    
 
         case 0xaa:
             std::cout << "XRA D" << std::endl;
-            flag_c = 0;
-            flag_p = get_parity((a ^ *d));
-            flag_z  = ((a ^ *d) == 0);
-            flag_s  = (((a ^ *d) & 0x80) != 0);
+            set_flags_bitwise(a, *d, 2);
             a = a ^ *d;
             pc += 1;
             break;   
 
         case 0xab:
             std::cout << "XRA E" << std::endl;
-            flag_c = 0;
-            flag_p = get_parity((a ^ *e));
-            flag_z  = ((a ^ *e) == 0);
-            flag_s  = (((a ^ *e) & 0x80) != 0);
+            set_flags_bitwise(a, *e, 2);
             a = a ^ *e;
             pc += 1;
             break;  
 
         case 0xac:
             std::cout << "XRA H" << std::endl;
-            flag_c = 0;
-            flag_p = get_parity((a ^ *h));
-            flag_z  = ((a ^ *h) == 0);
-            flag_s  = (((a ^ *h) & 0x80) != 0);
+            set_flags_bitwise(a, *h, 2);
             a = a ^ *h;
             pc += 1;
             break;  
 
         case 0xad:
             std::cout << "XRA L" << std::endl;
-            flag_c = 0;
-            flag_p = get_parity((a ^ *l));
-            flag_z  = ((a ^ *l) == 0);
-            flag_s  = (((a ^ *l) & 0x80) != 0);
+            set_flags_bitwise(a, *l, 2);
             a = a ^ *l;
             pc += 1;
             break;   
 
         case 0xae:
             std::cout << "XRA M" << std::endl;
-            flag_c = 0;
-            flag_p = get_parity((a ^ memory[hl]));
-            flag_z  = ((a ^ memory[hl]) == 0);
-            flag_s  = (((a ^ memory[hl]) & 0x80) != 0);
+            set_flags_bitwise(a, memory[hl], 2);
             a = a ^ memory[hl];
             pc += 1;
             break;    
 
          case 0xaf:
             std::cout << "XRA A" << std::endl;
-            flag_c = 0;
-            flag_p = get_parity(0);
-            flag_z  = 0;
-            flag_s  = 0;
-            a = 0;
+            set_flags_bitwise(a, a, 2);
+            a = a ^ a;
             pc += 1;
             break;             
         // -------------------------bx------------------------- //
@@ -1337,80 +1316,56 @@ void CPU::execute() {
 
         case 0xb0:
             std::cout << "ORA B" << std::endl;
-            flag_c = 0;
-            flag_p = get_parity(a | *b);
-            flag_z  = ((a | *b) == 0);
-            flag_s  = (((a | *b) & 0x80) != 0);
+            set_flags_bitwise(a, *b, 1);
             a = a | *b;
             pc += 1;
             break;    
 
         case 0xb1:
             std::cout << "ORA C" << std::endl;
-            flag_c = 0;
-            flag_p = get_parity(a | *c);
-            flag_z  = ((a | *c) == 0);
-            flag_s  = (((a | *c) & 0x80) != 0);
+            set_flags_bitwise(a, *c, 1);
             a = a | *c;
             pc += 1;
             break;   
 
         case 0xb2:
             std::cout << "ORA D" << std::endl;
-            flag_c = 0;
-            flag_p = get_parity(a | *d);
-            flag_z  = ((a | *d) == 0);
-            flag_s  = (((a | *d) & 0x80) != 0);
+            set_flags_bitwise(a, *d, 1);
             a = a | *d;
             pc += 1;
             break;  
 
         case 0xb3:
             std::cout << "ORA E" << std::endl;
-            flag_c = 0;
-            flag_p = get_parity(a | *e);
-            flag_z  = ((a | *e) == 0);
-            flag_s  = (((a | *e) & 0x80) != 0);
+            set_flags_bitwise(a, *e, 1);
             a = a | *e;
             pc += 1;
             break;    
 
         case 0xb4:
             std::cout << "ORA H" << std::endl;
-            flag_c = 0;
-            flag_p = get_parity(a | *h);
-            flag_z  = ((a | *h) == 0);
-            flag_s  = (((a | *h) & 0x80) != 0);
+            set_flags_bitwise(a, *h, 1);
             a = a | *h;
             pc += 1;
             break;   
 
         case 0xb5:
             std::cout << "ORA L" << std::endl;
-            flag_c = 0;
-            flag_p = get_parity(a | *l);
-            flag_z  = ((a | *l) == 0);
-            flag_s  = (((a | *l) & 0x80) != 0);
+            set_flags_bitwise(a, *l, 1);
             a = a | *l;
             pc += 1;
             break;  
 
         case 0xb6:
             std::cout << "ORA M" << std::endl;
-            flag_c = 0;
-            flag_p = get_parity(a | memory[hl]);
-            flag_z  = ((a | memory[hl]) == 0);
-            flag_s  = (((a | memory[hl]) & 0x80) != 0);
+            set_flags_bitwise(a, memory[hl], 1);
             a = a | memory[hl];
             pc += 1;
             break;    
 
         case 0xb7:
             std::cout << "ORA A" << std::endl;
-            flag_c = 0;
-            flag_p = get_parity(a | a);
-            flag_z  = ((a | a) == 0);
-            flag_s  = (((a | a) & 0x80) != 0);
+            set_flags_bitwise(a, a, 1);
             a = a | a;
             pc += 1;
             break;   
@@ -1729,10 +1684,7 @@ void CPU::execute() {
 
         case 0xe6:
             std::cout << "ANI D8" << std::endl;
-            flag_c = 0;
-            flag_p = get_parity(a & memory[pc + 1]);
-            flag_z  = ((a & memory[pc + 1]) == 0);
-            flag_s  = (((a & memory[pc + 1]) & 0x80) != 0);
+            set_flags_bitwise(a, memory[pc + 1], 0);
             a = a & memory[pc + 1];
             pc += 2;
             break;
@@ -1785,10 +1737,7 @@ void CPU::execute() {
 
         case 0xee:
             std::cout << "XRI D8" << std::endl;
-            flag_c = 0;
-            flag_p = get_parity((a ^ memory[pc + 1]));
-            flag_z  = ((a ^ memory[pc + 1]) == 0);
-            flag_s  = (((a ^ memory[pc + 1]) & 0x80) != 0);
+            set_flags_bitwise(a, memory[pc + 1], 2);
             a = a ^ memory[pc + 1];
             pc += 2;
             break;  
@@ -1814,6 +1763,12 @@ void CPU::execute() {
             {
             std::cout << "POP PSW" << std::endl;
             uint16_t psw = stack_pop();
+            a = psw >> 8;
+            flag_s = psw >> 7;
+            flag_z = psw >> 6;
+            flag_hc = psw >> 4;
+            flag_p = psw >> 2;
+            flag_c = psw & 1;
             pc += 1;
             break;
             }
@@ -1843,16 +1798,24 @@ void CPU::execute() {
         case 0xf5:
             {
             std::cout << "PUSH PSW" << std::endl;
-            pc += 3;
+            uint16_t psw;
+            psw = a << 8;
+            psw |= flag_s << 7;
+            psw |= flag_z << 6;
+            psw |= 0 << 5;
+            psw |= flag_hc << 4;
+            psw |= 0 << 3;
+            psw |= flag_p << 2;
+            psw |= 1 << 1;
+            psw |= flag_c;
+            stack_push(psw);
+            pc += 1;
             break;
             }
 
         case 0xf6:
             std::cout << "ORI D8" << std::endl;
-            flag_c = 0;
-            flag_p = get_parity(a | memory[pc + 1]);
-            flag_z  = ((a | memory[pc + 1]) == 0);
-            flag_s  = (((a | memory[pc + 1]) & 0x80) != 0);
+            set_flags_bitwise(a, memory[pc + 1], 1);
             a = a | memory[pc + 1];
             pc += 2;
             break;

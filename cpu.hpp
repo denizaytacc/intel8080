@@ -36,6 +36,7 @@ class CPU{
     void debug();
     void set_flags_add(uint8_t op1, uint8_t op2, bool change_carry);
     void set_flags_sub(uint8_t op1, uint8_t op2, bool change_carry);
+    void set_flags_bitwise(uint8_t op1, uint8_t op2, int operation);
     bool get_parity(uint16_t n);
     bool get_carry(uint8_t op1, uint8_t op2);
 

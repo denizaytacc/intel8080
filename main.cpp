@@ -4,11 +4,10 @@
 
 int main (int argc, char* argv[]){
     CPU cpu;
-    cpu.load_rom("invaders");
-    Display screen;
-    //std::cout << argc << std::endl;
+    cpu.load_rom("tests/8080PRE.COM");
+    //Display screen;
     int i = 0;
-    while (i < 100)    
+    while (i < 1061)    
     {    
         cpu.execute();    
         i += 1;

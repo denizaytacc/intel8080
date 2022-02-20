@@ -22,11 +22,11 @@ CPU::CPU() {
     pc = 0x100;
     sp = 0;
     local = 0;
-    // memory[0] = 0xd3;
-    // memory[0x5] = 0xd3;
-    // memory[0x6] = 0x01;
+    memory[0x5] = 0xd3;
+    memory[0x6] = 0x01;
     memory[0x7] = 0xc9;
     int_enable = 0;
+    active = 1;
     set_psw();
 
 }
@@ -44,19 +44,15 @@ void CPU::set_psw() {
 }
 
 void CPU::stack_push(uint16_t val) {
-    //std::cout << std::hex << "Pushing: " << val << std::endl;
     sp -= 2;
     memory[sp] = (val & 0xff);
     memory[sp + 1] = (val >> 8);
-    //std::cout << std::hex << int(memory[sp - 1]) << ":" << int(memory[sp]) << ":" << int(memory[sp + 1]) << std::endl;
 
 }
 
 uint16_t CPU::stack_pop() {
-    //std::cout << std::hex << int(memory[sp - 1]) << ":" << int(memory[sp]) << ":" << int(memory[sp + 1]) << std::endl;
     uint16_t val = memory[sp] | (memory[sp + 1] << 8);
     sp += 2;
-    //std::cout << "Popping: " << std::hex << val << std::endl;
     return val;
 }
 
@@ -209,6 +205,7 @@ void CPU::execute() {
 
         case 0x00:
             pc += 1;
+            active = 0;
             break;
 
         case 0x01:
@@ -1436,7 +1433,6 @@ void CPU::execute() {
             break;
 
         case 0xd3: // OUT D8 TODO
-            std::cout << "I'm here" << std::endl;
             {
             uint8_t port = memory[pc + 1];
             if (port == 2) {

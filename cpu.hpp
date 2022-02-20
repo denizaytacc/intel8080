@@ -29,9 +29,9 @@ class CPU{
     uint16_t sp;
     uint16_t local; // To use with instructions that requires another value to use
     uint8_t opcode;
-    uint8_t memory[0x10000]; // 65, 536B
+    uint8_t memory[0x10000]; // 65,536B
     
-    // Input-Output
+    // Input - Output
     uint8_t InPort[4];
     uint8_t OutPort[7];
     uint8_t shift_8;
@@ -39,6 +39,8 @@ class CPU{
 
     uint8_t int_enable;
     public:
+    uint8_t active;
+    
     CPU();
     void execute();
     void load_rom(const char* fileName);
